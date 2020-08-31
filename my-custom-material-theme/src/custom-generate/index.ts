@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import { strings } from '@angular-devkit/core';
+import { strings, JsonObject, normalize } from '@angular-devkit/core';
 import {
   FileOperator,
   Rule,
@@ -20,6 +20,7 @@ import {
   move,
   noop,
   url,
+  SchematicContext,
 } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
 import {
@@ -34,6 +35,7 @@ import { parseName } from '@schematics/angular//utility/parse-name';
 import { validateHtmlSelector, validateName } from '@schematics/angular/utility/validation';
 import { buildDefaultPath, getWorkspace } from '@schematics/angular/utility/workspace';
 import { Schema as ComponentOptions } from './schema';
+
 
 function readIntoSourceFile(host: Tree, modulePath: string): ts.SourceFile {
   const text = host.read(modulePath);
@@ -130,10 +132,11 @@ function buildSelector(options: ComponentOptions, projectPrefix: string) {
 
 
 export default function (options: ComponentOptions): Rule {
-  return async (host: Tree) => {
+  return async (host: Tree, _context: SchematicContext) => {
     const workspace = await getWorkspace(host);
     const project = workspace.projects.get(options.project as string);
-
+    
+    
     if (options.path === undefined && project) {
       options.path = buildDefaultPath(project);
     }
@@ -144,6 +147,9 @@ export default function (options: ComponentOptions): Rule {
     options.name = parsedPath.name;
     options.path = parsedPath.path;
     options.selector = options.selector || buildSelector(options, project && project.prefix || '');
+
+    _context.logger.info(options.path as string);
+    _context.logger.info(options.name as string);
 
     validateName(options.name);
     validateHtmlSelector(options.selector);
@@ -167,7 +173,7 @@ export default function (options: ComponentOptions): Rule {
           return file;
         }
       }) as FileOperator) : noop(),
-      move(parsedPath.path),
+      move(normalize(parsedPath.path)),
     ]);
 
     return chain([
