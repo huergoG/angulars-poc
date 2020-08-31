@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import { strings, JsonObject, normalize } from '@angular-devkit/core';
+import { strings } from '@angular-devkit/core';
 import {
   FileOperator,
   Rule,
@@ -17,7 +17,7 @@ import {
   filter,
   forEach,
   mergeWith,
-  move,
+ // move,
   noop,
   url,
   SchematicContext,
@@ -135,22 +135,20 @@ export default function (options: ComponentOptions): Rule {
   return async (host: Tree, _context: SchematicContext) => {
     const workspace = await getWorkspace(host);
     const project = workspace.projects.get(options.project as string);
-    
-    
+  
     if (options.path === undefined && project) {
       options.path = buildDefaultPath(project);
     }
+    
+     options.module = findModuleFromOptions(host, options);
+  
+     const parsedPath = parseName(options.path as string, options.name);
 
-    options.module = findModuleFromOptions(host, options);
-
-    const parsedPath = parseName(options.path as string, options.name);
-    options.name = parsedPath.name;
-    options.path = parsedPath.path;
+     options.name = parsedPath.name;
+     options.path = parsedPath.path;
     options.selector = options.selector || buildSelector(options, project && project.prefix || '');
 
-    _context.logger.info(options.path as string);
-    _context.logger.info(options.name as string);
-
+   
     validateName(options.name);
     validateHtmlSelector(options.selector);
 
@@ -173,7 +171,6 @@ export default function (options: ComponentOptions): Rule {
           return file;
         }
       }) as FileOperator) : noop(),
-      move(normalize(parsedPath.path)),
     ]);
 
     return chain([
