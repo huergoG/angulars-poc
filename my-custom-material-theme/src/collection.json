@@ -1,9 +1,10 @@
 {
   "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
-    "my-custom-material-theme": {
-      "description": "A blank schematic.",
-      "factory": "./my-custom-material-theme/index#myCustomMaterialTheme"
+    "ng-add": {
+      "description": "Adding the Custom material files.",
+      "factory": "./my-custom-material-theme/index#myCustomMaterialTheme",
+      "aliases": ["add-custom-material"]
     },
     "custom-component": {
       "description": "A Generator for custom themed components",
