@@ -12,6 +12,12 @@
     },
     {
       "path": "./projects/custom-material/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/angular-d3/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/angular-d3/tsconfig.spec.json"
     }
 ]
 }
